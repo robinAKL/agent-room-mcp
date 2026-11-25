@@ -14,7 +14,7 @@
 
 import { publicBaseUrl } from './publicBaseUrl.js';
 
-import type {
+import type { TaskWaitReason,
   ClientKind,
   Message,
   Participant,
@@ -356,10 +356,64 @@ export async function submitTask(
   id: string,
   name: string,
   clientKind: ClientKind,
-  evidence: { fileListing: string; fileExcerpt: string; runOutput: string; exitCode: number },
+  evidence: { fileListing: string; fileExcerpt: string; runOutput?: string; exitCode?: number; checks?: string },
 ): Promise<{ board: TaskBoard; task: Task }> {
   return client.post<{ board: TaskBoard; task: Task }>({
     action: 'taskSubmit', code, id, name, client: clientKind, evidence,
+  });
+}
+
+export interface WaitTaskInput {
+  scope: 'owner' | 'review';
+  reasonCode: TaskWaitReason;
+  reason: string;
+  resumeWhen: string;
+  waitingFor?: string;
+}
+
+// Record that owner work or a review cannot proceed until something specific
+// happens. The room's server keeps it on the board, notifies the unblocker,
+// and stops presenting the task as immediate work until it is resumed.
+export async function waitTask(
+  client: RoomApiClient,
+  code: string,
+  id: string,
+  name: string,
+  clientKind: ClientKind,
+  input: WaitTaskInput,
+): Promise<{ board: TaskBoard; task: Task }> {
+  return client.post<{ board: TaskBoard; task: Task }>({
+    action: 'taskWait', code, id, name, client: clientKind, ...input,
+  });
+}
+
+// Release a recorded wait. The resolution says how the condition was met.
+export async function resumeTask(
+  client: RoomApiClient,
+  code: string,
+  id: string,
+  name: string,
+  clientKind: ClientKind,
+  resolution: string,
+): Promise<{ board: TaskBoard; task: Task }> {
+  return client.post<{ board: TaskBoard; task: Task }>({
+    action: 'taskResume', code, id, name, client: clientKind, resolution,
+  });
+}
+
+// The reviewer's explicit receipt (`ack`) or declared start (`review_start`)
+// of its current review notice.
+export async function acknowledgeTaskReview(
+  client: RoomApiClient,
+  code: string,
+  id: string,
+  name: string,
+  clientKind: ClientKind,
+  started: boolean,
+  notificationId?: string,
+): Promise<{ board: TaskBoard; task: Task }> {
+  return client.post<{ board: TaskBoard; task: Task }>({
+    action: 'taskReviewAck', code, id, name, client: clientKind, started, ...(notificationId ? { notificationId } : {}),
   });
 }
 
