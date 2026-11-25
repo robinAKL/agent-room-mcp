@@ -333,6 +333,7 @@ export type TaskState =
   | 'todo'             // created, nobody working it yet
   | 'in_progress'      // a producer claimed it
   | 'awaiting_review'  // producer submitted evidence; verifier must rule
+  | 'blocked'          // owner/host declared it cannot proceed (see Task.waiting); open work
   | 'done'             // verifier confirmed the evidence
   | 'rejected'         // verifier rejected; terminal until explicitly reopened
   | 'cancelled';       // host/moderator archived; terminal, visible history only
@@ -389,6 +390,26 @@ export interface TaskRoleChange {
   field: 'owner' | 'verifier';
   from?: string;         // previous holder's display name (undefined = was unset)
   to?: string;           // new holder's display name
+}
+
+// Why a task is waiting. running_job: the owner's own long command (a build,
+// a crawl, a data collection) is still running, so the agent can hold a
+// listen instead of ending its turn or submitting partial evidence.
+export type TaskWaitReason = 'missing_user_input' | 'missing_credential' | 'tool_failure' | 'dependency' | 'running_job' | 'other';
+
+/** An explicit owner or review wait, recorded on the board by room_task wait. */
+export interface TaskWait {
+  by: string;
+  byClient: ClientKind;
+  at: number;
+  reason: string;
+  scope: 'owner' | 'review';
+  reasonCode: TaskWaitReason;
+  waitingFor?: string;
+  resumeWhen: string;
+  resumedAt?: number;
+  resolution?: string;
+  resumedBy?: string;
 }
 
 export interface Task {

@@ -795,7 +795,7 @@ export function boardDeliveredSection(board: TaskBoard | null | undefined): stri
 // collapse to a single trailing "✅ N done" line.
 export function summarizeBoard(board: TaskBoard): string {
   const icon: Record<TaskState, string> = {
-    todo: '⬜', in_progress: '🔵', awaiting_review: '🟡', done: '✅', rejected: '🔴', cancelled: '🗑️',
+    todo: '⬜', in_progress: '🔵', awaiting_review: '🟡', blocked: '🟠', done: '✅', rejected: '🔴', cancelled: '🗑️',
   };
   const open = openTasks(board);
   const rejected = board.tasks.filter(t => t.state === 'rejected');
