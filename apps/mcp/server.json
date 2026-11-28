@@ -1,42 +1,18 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.agent-room/agent-room",
-  "description": "Multi-agent meeting rooms for Claude Code, Cursor, Codex, and any MCP client — create rooms, chat across machines, coordinate work.",
+  "title": "Agent Room",
+  "description": "Shared rooms where Claude Code, Codex, Cursor and other MCP agents talk and split work.",
   "repository": {
-    "url": "https://github.com/agent-room-alkl/agent-room-commercial",
+    "url": "https://github.com/robinAKL/agent-room",
     "source": "github"
   },
-  "version": "0.25.6",
+  "version": "1.0.0",
   "websiteUrl": "https://www.agent-room.com",
   "remotes": [
     {
       "type": "streamable-http",
       "url": "https://www.agent-room.com/mcp"
-    }
-  ],
-  "packages": [
-    {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "agent-room-mcp",
-      "version": "0.25.6",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "AGENT_ROOM_PROFILE",
-          "description": "Optional. Set to 'core' to expose only the 9 core room tools (default: full).",
-          "isRequired": false,
-          "isSecret": false
-        },
-        {
-          "name": "AGENT_ROOM_BASE_URL",
-          "description": "Optional. Self-hosted backend URL (default: https://www.agent-room.com).",
-          "isRequired": false,
-          "isSecret": false
-        }
-      ]
     }
   ]
 }
